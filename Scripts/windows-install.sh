@@ -170,7 +170,7 @@ require_cmd mkfs.ntfs
 require_cmd mountpoint
 require_cmd partprobe
 if ! command -v ntfs-3g >/dev/null 2>&1 && ! command -v mount.ntfs >/dev/null 2>&1; then
-  die "Missing NTFS mount helper (install ntfs-3g)"
+  die "Missing NTFS mount helper (install ntfs-3g or mount.ntfs)"
 fi
 
 if [[ -n "$DISK" ]]; then
@@ -214,11 +214,11 @@ if [[ $FORMAT -eq 1 ]]; then
   mkfs.ntfs -f -L "$OS_LABEL" "$OS_PART" || die "Failed to format Windows partition: $OS_PART"
 fi
 
-mount -t ntfs "$OS_PART" "$WIN_MNT"
+mount -t ntfs "$OS_PART" "$WIN_MNT" || die "Failed to mount Windows partition: $OS_PART"
 
 wimlib-imagex apply "$WIM_PATH" "$INDEX" "$WIN_MNT" || die "Failed to apply Windows image from $WIM_PATH"
 
-mount "$EFI_PART" "$EFI_MNT"
+mount "$EFI_PART" "$EFI_MNT" || die "Failed to mount EFI partition: $EFI_PART"
 mkdir -p "$EFI_MNT/EFI/Microsoft/Boot" "$EFI_MNT/EFI/Boot"
 
 if [[ -d "$WIN_MNT/Windows/Boot/EFI" ]]; then

@@ -36,4 +36,5 @@ sudo Scripts/windows-install.sh --iso /path/to/Win11_ARM64.iso \
 - The script copies EFI boot files and creates `EFI/Boot/bootaa64.efi` as a fallback path.
 - If Windows fails to boot, boot into WinPE, identify the Windows and EFI drive letters, then run:
   `bcdboot <WindowsDrive>:\Windows /s <EfiDrive>: /f UEFI`
+  Replace `<WindowsDrive>` and `<EfiDrive>` with the drive letters assigned in WinPE.
   (Replace `S:` with the drive letter assigned to the EFI partition in WinPE.)

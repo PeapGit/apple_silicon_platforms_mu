@@ -39,15 +39,15 @@ require_cmd() {
 }
 
 partition_path() {
-  local disk="$1"
-  local num="$2"
+  local device_path="$1"
+  local partition_number="$2"
   local suffix=""
 
-  if [[ "$disk" =~ [0-9]$ ]]; then
+  if [[ "$device_path" =~ [0-9]$ ]]; then
     suffix="p"
   fi
 
-  echo "${disk}${suffix}${num}"
+  echo "${device_path}${suffix}${partition_number}"
 }
 
 confirm_disk_wipe() {
@@ -66,11 +66,11 @@ confirm_disk_wipe() {
 
 resolve_disk_from_part() {
   local part="$1"
-  local disk_name
+  local device_name
 
-  disk_name=$(lsblk -no PKNAME "$part" | head -n 1)
-  [[ -n "$disk_name" ]] || return 1
-  echo "/dev/${disk_name}"
+  device_name=$(lsblk -no PKNAME "$part" | head -n 1)
+  [[ -n "$device_name" ]] || return 1
+  echo "/dev/${device_name}"
 }
 
 resolve_partnum() {
@@ -185,9 +185,9 @@ if [[ -n "$DISK" ]]; then
   FORMAT=1
 fi
 
-ISO_MNT=$(mktemp -d -t winiso.XXXXXX)
-WIN_MNT=$(mktemp -d -t winos.XXXXXX)
-EFI_MNT=$(mktemp -d -t winefi.XXXXXX)
+ISO_MNT=$(mktemp -d -t windows-iso.XXXXXX)
+WIN_MNT=$(mktemp -d -t windows-os.XXXXXX)
+EFI_MNT=$(mktemp -d -t windows-efi.XXXXXX)
 
 cleanup() {
   set +e
@@ -210,13 +210,13 @@ else
 fi
 
 if [[ $FORMAT -eq 1 ]]; then
-  mkfs.fat -F 32 -n "$EFI_LABEL" "$EFI_PART"
-  mkfs.ntfs -f -L "$OS_LABEL" "$OS_PART"
+  mkfs.fat -F 32 -n "$EFI_LABEL" "$EFI_PART" || die "Failed to format EFI partition: $EFI_PART"
+  mkfs.ntfs -f -L "$OS_LABEL" "$OS_PART" || die "Failed to format Windows partition: $OS_PART"
 fi
 
 mount -t ntfs "$OS_PART" "$WIN_MNT"
 
-wimlib-imagex apply "$WIM_PATH" "$INDEX" "$WIN_MNT"
+wimlib-imagex apply "$WIM_PATH" "$INDEX" "$WIN_MNT" || die "Failed to apply Windows image from $WIM_PATH"
 
 mount "$EFI_PART" "$EFI_MNT"
 mkdir -p "$EFI_MNT/EFI/Microsoft/Boot" "$EFI_MNT/EFI/Boot"

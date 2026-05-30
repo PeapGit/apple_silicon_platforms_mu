@@ -242,16 +242,21 @@ sync
 if [[ $SKIP_EFIBOOTMGR -eq 0 ]]; then
   if command -v efibootmgr >/dev/null 2>&1; then
     EFI_DISK="$DISK"
-    EFI_PARTNUM="1"
+    EFI_PARTNUM=""
 
     if [[ -z "$EFI_DISK" ]]; then
       EFI_DISK=$(resolve_disk_from_part "$EFI_PART" || true)
-      EFI_PARTNUM=$(resolve_partnum "$EFI_PART" || true)
+    fi
+    EFI_PARTNUM=$(resolve_partnum "$EFI_PART" || true)
+    if [[ -z "$EFI_PARTNUM" && -n "$DISK" ]]; then
+      EFI_PARTNUM="1"
     fi
 
     if [[ -n "$EFI_DISK" && -n "$EFI_PARTNUM" ]]; then
-      efibootmgr -c -d "$EFI_DISK" -p "$EFI_PARTNUM" -L "Windows Boot Manager" \
-        -l '\\EFI\\Microsoft\\Boot\\bootmgfw.efi' || true
+      if ! efibootmgr -c -d "$EFI_DISK" -p "$EFI_PARTNUM" -L "Windows Boot Manager" \
+        -l '\\EFI\\Microsoft\\Boot\\bootmgfw.efi'; then
+        echo "warning: efibootmgr failed to create a boot entry. Ensure efivars are mounted and the firmware allows NVRAM writes." >&2
+      fi
     else
       echo "warning: Unable to determine disk/partition number from $EFI_PART for efibootmgr; skipping" >&2
     fi

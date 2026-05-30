@@ -175,7 +175,7 @@ if command -v ntfs-3g >/dev/null 2>&1; then
 elif command -v mount.ntfs >/dev/null 2>&1; then
   NTFS_MOUNT_TYPE="ntfs"
 else
-  die "Missing NTFS mount helper (install ntfs-3g, which provides ntfs-3g and mount.ntfs)"
+  die "Missing NTFS mount helper (install ntfs-3g for NTFS support)"
 fi
 
 if [[ -n "$DISK" ]]; then
@@ -260,7 +260,7 @@ if [[ $SKIP_EFIBOOTMGR -eq 0 ]]; then
     if [[ -n "$EFI_DISK" && -n "$EFI_PARTNUM" ]]; then
       if ! efibootmgr -c -d "$EFI_DISK" -p "$EFI_PARTNUM" -L "Windows Boot Manager" \
         -l '\\EFI\\Microsoft\\Boot\\bootmgfw.efi'; then
-        echo "warning: efibootmgr failed to create a boot entry. Ensure efivars are mounted and the firmware allows NVRAM writes." >&2
+        echo "warning: efibootmgr failed to create a boot entry. Check that /sys/firmware/efi/efivars is mounted and writable, and that the firmware allows NVRAM writes." >&2
       fi
     else
       echo "warning: Unable to determine disk/partition number from $EFI_PART for efibootmgr; skipping" >&2

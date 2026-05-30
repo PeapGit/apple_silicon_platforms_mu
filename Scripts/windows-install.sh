@@ -57,7 +57,7 @@ confirm_disk_wipe() {
     return 0
   fi
 
-  read -r -p "This will ERASE all data on ${disk}. Continue? [y/N]: " reply
+  read -r -p "WARNING: This will PERMANENTLY ERASE all data on ${disk}. This action cannot be undone. Continue? [y/N]: " reply
   case "$reply" in
     [yY]) return 0 ;;
     *) exit 1 ;;
@@ -258,4 +258,5 @@ if [[ $SKIP_EFIBOOTMGR -eq 0 ]]; then
 fi
 
 echo "Windows image applied to $OS_PART and EFI files installed to $EFI_PART."
-echo "If Windows fails to boot, boot into WinPE and run: bcdboot C:\Windows /s S: /f UEFI"
+echo "If Windows fails to boot, boot into WinPE, identify the Windows and EFI drive letters,"
+echo "then run: bcdboot <WindowsDrive>:\\Windows /s <EfiDrive>: /f UEFI"

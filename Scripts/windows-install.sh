@@ -158,7 +158,7 @@ else
   [[ -b "$OS_PART" ]] || die "Windows partition not found: $OS_PART"
 fi
 
-[[ $EUID -eq 0 ]] || die "Run as root"
+[[ $EUID -eq 0 ]] || die "This script must be run as root (use sudo)"
 
 require_cmd lsblk
 require_cmd mount
@@ -250,7 +250,7 @@ if [[ $SKIP_EFIBOOTMGR -eq 0 ]]; then
       efibootmgr -c -d "$EFI_DISK" -p "$EFI_PARTNUM" -L "Windows Boot Manager" \
         -l '\\EFI\\Microsoft\\Boot\\bootmgfw.efi' || true
     else
-      echo "warning: Unable to resolve disk/partition for efibootmgr; skipping" >&2
+      echo "warning: Unable to determine disk/partition number from $EFI_PART for efibootmgr; skipping" >&2
     fi
   else
     echo "warning: efibootmgr not found; skipping boot entry creation" >&2

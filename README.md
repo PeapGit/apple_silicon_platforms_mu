@@ -23,6 +23,10 @@ This repository is designed with a strong emphasis on code reuse for platforms w
 
 The UEFI implementation can boot off a external mass storage device off a USB-C port (note: not without hacks, this needs to be addressed), and the Windows loader initializes and successfully creates the RAMDisk, but hangs on the handoff between bootloader and kernel.
 
+### Windows install helper
+
+See Docs/WINDOWS_INSTALL.md for a Linux bash script that applies a Windows 10/11 ARM64 ISO to a disk/partition and sets up EFI boot files.
+
 ### Layout (for non Mu submodules)
 ```
 Platform/ - code specific to a given platform (MacBook Air, MacBook Pro, Mac Studio, Mac Mini, etc.)

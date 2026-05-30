@@ -169,8 +169,13 @@ require_cmd mkfs.fat
 require_cmd mkfs.ntfs
 require_cmd mountpoint
 require_cmd partprobe
-if ! command -v ntfs-3g >/dev/null 2>&1 && ! command -v mount.ntfs >/dev/null 2>&1; then
-  die "Missing NTFS mount helper (install ntfs-3g or mount.ntfs)"
+NTFS_MOUNT_TYPE=""
+if command -v ntfs-3g >/dev/null 2>&1; then
+  NTFS_MOUNT_TYPE="ntfs-3g"
+elif command -v mount.ntfs >/dev/null 2>&1; then
+  NTFS_MOUNT_TYPE="ntfs"
+else
+  die "Missing NTFS mount helper (install ntfs-3g, which provides ntfs-3g and mount.ntfs)"
 fi
 
 if [[ -n "$DISK" ]]; then
@@ -214,7 +219,7 @@ if [[ $FORMAT -eq 1 ]]; then
   mkfs.ntfs -f -L "$OS_LABEL" "$OS_PART" || die "Failed to format Windows partition: $OS_PART"
 fi
 
-mount -t ntfs "$OS_PART" "$WIN_MNT" || die "Failed to mount Windows partition: $OS_PART"
+mount -t "$NTFS_MOUNT_TYPE" "$OS_PART" "$WIN_MNT" || die "Failed to mount Windows partition: $OS_PART"
 
 wimlib-imagex apply "$WIM_PATH" "$INDEX" "$WIN_MNT" || die "Failed to apply Windows image from $WIM_PATH"
 
@@ -267,5 +272,5 @@ fi
 
 echo "Windows image applied to $OS_PART and EFI files installed to $EFI_PART."
 echo "If Windows fails to boot, boot into WinPE, identify the Windows and EFI drive letters,"
-echo "then run: bcdboot <WindowsDrive>:\\Windows /s <EfiDrive>: /f UEFI"
+echo "then run: bcdboot <WindowsDrive>:\Windows /s <EfiDrive>: /f UEFI"
 echo "Replace <WindowsDrive> and <EfiDrive> with the drive letters assigned in WinPE."

@@ -169,6 +169,9 @@ require_cmd mkfs.fat
 require_cmd mkfs.ntfs
 require_cmd mountpoint
 require_cmd partprobe
+if ! command -v ntfs-3g >/dev/null 2>&1 && ! command -v mount.ntfs >/dev/null 2>&1; then
+  die "Missing NTFS mount helper (install ntfs-3g)"
+fi
 
 if [[ -n "$DISK" ]]; then
   require_cmd sgdisk

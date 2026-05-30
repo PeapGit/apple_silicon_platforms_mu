@@ -37,4 +37,3 @@ sudo Scripts/windows-install.sh --iso /path/to/Win11_ARM64.iso \
 - If Windows fails to boot, boot into WinPE, identify the Windows and EFI drive letters, then run:
   `bcdboot <WindowsDrive>:\Windows /s <EfiDrive>: /f UEFI`
   Replace `<WindowsDrive>` and `<EfiDrive>` with the drive letters assigned in WinPE.
-  (Replace `S:` with the drive letter assigned to the EFI partition in WinPE.)

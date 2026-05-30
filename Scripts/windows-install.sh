@@ -258,4 +258,4 @@ if [[ $SKIP_EFIBOOTMGR -eq 0 ]]; then
 fi
 
 echo "Windows image applied to $OS_PART and EFI files installed to $EFI_PART."
-echo "If Windows fails to boot, boot into WinPE and run: bcdboot C:\\Windows /s S: /f UEFI"
+echo "If Windows fails to boot, boot into WinPE and run: bcdboot C:\Windows /s S: /f UEFI"
